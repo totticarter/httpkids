@@ -10,7 +10,7 @@ public class DemoServer {
 		UserDB db = new UserDB();
 		MemorySession session = new MemorySession();
 
-		var router = new Router((ctx, req) -> {
+		Router router = new Router((ctx, req) -> {
 			ctx.redirect("/user");
 		});
 		router.resource("/pub", "/static");
@@ -18,10 +18,10 @@ public class DemoServer {
 		router.child("/play", new PlayHandler());
 		router.child("/user", new UserHandler().route().filter(new AuthFilter(session)));
 
-		var rd = new KidsRequestDispatcher("/kids", router);
+		KidsRequestDispatcher rd = new KidsRequestDispatcher("/kids", router);
 		rd.templateRoot("/tpl");
 
-		var server = new HttpServer("localhost", 8080, 2, 16, rd);
+		HttpServer server = new HttpServer("localhost", 8080, 2, 16, rd);
 		server.start();
 
 		Runtime.getRuntime().addShutdownHook(new Thread() {

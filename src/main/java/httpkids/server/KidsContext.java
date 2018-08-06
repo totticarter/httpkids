@@ -8,6 +8,7 @@ import java.util.Set;
 
 import com.alibaba.fastjson.JSON;
 
+import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
@@ -52,7 +53,7 @@ public class KidsContext {
 	public KidsContext addCookie(String name, String value, String domain, String path, long maxAge, boolean httpOnly,
 			boolean isSecure) {
 		Cookie cookie = null;
-		for (var ck : cookies) {
+		for (Cookie ck : cookies) {
 			if (ck.name().equals(name)) {
 				cookie = ck;
 				break;
@@ -100,8 +101,8 @@ public class KidsContext {
 	}
 
 	public void text(String content, String contentType, int statusCode) {
-		var buf = ByteBufAllocator.DEFAULT.buffer();
-		var bytes = content.getBytes(KidsUtils.UTF8);
+		ByteBuf buf = ByteBufAllocator.DEFAULT.buffer();
+		byte[] bytes = content.getBytes(KidsUtils.UTF8);
 		buf.writeBytes(bytes);
 		DefaultFullHttpResponse res = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1,
 				HttpResponseStatus.valueOf(statusCode), buf);
@@ -135,8 +136,8 @@ public class KidsContext {
 	}
 
 	public void error(String msg, String contentType, int statusCode) {
-		var buf = ByteBufAllocator.DEFAULT.buffer();
-		var bytes = msg.getBytes(KidsUtils.UTF8);
+		ByteBuf buf = ByteBufAllocator.DEFAULT.buffer();
+		byte[] bytes = msg.getBytes(KidsUtils.UTF8);
 		buf.writeBytes(bytes);
 		DefaultFullHttpResponse res = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1,
 				HttpResponseStatus.valueOf(statusCode), buf);

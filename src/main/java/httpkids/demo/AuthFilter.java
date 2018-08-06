@@ -19,7 +19,7 @@ public class AuthFilter implements IRequestFilter {
 		}
 		String sid = req.cookie("kids_sid");
 		if (sid != null) {
-			var user = session.getUser(sid);
+			User user = session.getUser(sid);
 			if (user != null) {
 				req.attr("user", user);
 				return true;

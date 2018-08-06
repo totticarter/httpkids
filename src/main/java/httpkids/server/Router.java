@@ -48,7 +48,7 @@ public class Router {
 		if (!METHODS.contains(method)) {
 			throw new IllegalArgumentException("illegal http method name");
 		}
-		var handlers = subMethodHandlers.get(path);
+		Map<String, IRequestHandler> handlers = subMethodHandlers.get(path);
 		if (handlers == null) {
 			handlers = new HashMap<>();
 			subMethodHandlers.put(path, handlers);
@@ -89,19 +89,19 @@ public class Router {
 	}
 
 	public Router filter(IRequestFilter... filters) {
-		for (var filter : filters) {
+		for (IRequestFilter filter : filters) {
 			this.filters.add(filter);
 		}
 		return this;
 	}
 
 	public void handle(KidsContext ctx, KidsRequest req) {
-		for (var filter : filters) {
+		for (IRequestFilter filter : filters) {
 			req.filter(filter);
 		}
-		var prefix = req.peekUriPrefix();
-		var method = req.method().toLowerCase();
-		var router = subRouters.get(prefix);
+		String prefix = req.peekUriPrefix();
+		String method = req.method().toLowerCase();
+		Router router = subRouters.get(prefix);
 		if (router != null) {
 			req.popUriPrefix();
 			router.handle(ctx, req);
@@ -109,7 +109,7 @@ public class Router {
 		}
 
 		if (prefix.equals(req.relativeUri())) {
-			var handlers = subMethodHandlers.get(prefix);
+			Map<String, IRequestHandler> handlers = subMethodHandlers.get(prefix);
 			IRequestHandler handler = null;
 			if (handlers != null) {
 				handler = handlers.get(method);
@@ -132,7 +132,7 @@ public class Router {
 	}
 
 	private void handleImpl(IRequestHandler handler, KidsContext ctx, KidsRequest req) {
-		for (var filter : req.filters()) {
+		for (IRequestFilter filter : req.filters()) {
 			if (!filter.filter(ctx, req, true)) {
 				return;
 			}
@@ -140,7 +140,7 @@ public class Router {
 
 		handler.handle(ctx, req);
 
-		for (var filter : req.filters()) {
+		for (IRequestFilter filter : req.filters()) {
 			if (!filter.filter(ctx, req, false)) {
 				return;
 			}

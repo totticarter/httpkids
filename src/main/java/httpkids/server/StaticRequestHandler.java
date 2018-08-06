@@ -61,7 +61,7 @@ public class StaticRequestHandler implements IRequestHandler {
 
 	@Override
 	public void handle(KidsContext ctx, KidsRequest req) {
-		var path = req.relativeUri();
+		String path = req.relativeUri();
 		path = Paths.get(this.staticRoot, path).toString();
 		if (classpath) {
 			sendResource(ctx, path);

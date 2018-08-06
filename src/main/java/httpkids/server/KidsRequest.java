@@ -18,6 +18,7 @@ import io.netty.handler.codec.http.QueryStringDecoder;
 import io.netty.handler.codec.http.cookie.Cookie;
 import io.netty.handler.codec.http.cookie.ServerCookieDecoder;
 import io.netty.handler.codec.http.multipart.HttpPostRequestDecoder;
+import io.netty.handler.codec.http.multipart.InterfaceHttpData;
 import io.netty.handler.codec.http.multipart.InterfaceHttpData.HttpDataType;
 import io.netty.handler.codec.http.multipart.MixedAttribute;
 import io.netty.util.AsciiString;
@@ -115,7 +116,7 @@ public class KidsRequest {
 	}
 
 	public String header(String name) {
-		var values = headers(name);
+		List<String> values = headers(name);
 		return values.isEmpty() ? null : values.get(0);
 	}
 
@@ -124,7 +125,7 @@ public class KidsRequest {
 	}
 
 	public List<String> headers(String name) {
-		var values = allHeaders().get(name.toLowerCase());
+		List<String> values = allHeaders().get(name.toLowerCase());
 		return values == null ? Collections.emptyList() : values;
 	}
 
@@ -171,7 +172,7 @@ public class KidsRequest {
 	}
 
 	public List<String> params(String name) {
-		var values = allParams().get(name);
+		List<String> values = allParams().get(name);
 		if (values == null) {
 			values = Collections.emptyList();
 		}
@@ -179,7 +180,7 @@ public class KidsRequest {
 	}
 
 	public String param(String name) {
-		var all = params(name);
+		List<String> all = params(name);
 		return all.isEmpty() ? null : all.get(0);
 	}
 
@@ -201,12 +202,12 @@ public class KidsRequest {
 	public Map<String, List<String>> allForms() {
 		if (forms == null) {
 			forms = new HashMap<>();
-			var datas = bodyDecoder().getBodyHttpDatas();
+			List<InterfaceHttpData> datas = bodyDecoder().getBodyHttpDatas();
 			datas.forEach(data -> {
-				var attr = (MixedAttribute) data;
+				MixedAttribute attr = (MixedAttribute) data;
 				if (attr.getHttpDataType() == HttpDataType.Attribute
 						|| attr.getHttpDataType() == HttpDataType.InternalAttribute) {
-					var values = forms.get(attr.getName());
+					List<String> values = forms.get(attr.getName());
 					if (values == null) {
 						values = new ArrayList<>(1);
 						forms.put(attr.getName(), values);
@@ -222,7 +223,7 @@ public class KidsRequest {
 	}
 
 	public List<String> forms(String name) {
-		var values = allForms().get(name);
+		List<String> values = allForms().get(name);
 		if (values == null) {
 			values = Collections.emptyList();
 		}
@@ -230,7 +231,7 @@ public class KidsRequest {
 	}
 
 	public String form(String name) {
-		var values = forms(name);
+		List<String> values = forms(name);
 		if (values.isEmpty()) {
 			return null;
 		}
@@ -238,7 +239,7 @@ public class KidsRequest {
 	}
 
 	public String mixedParam(String name) {
-		var value = this.param(name);
+		String value = this.param(name);
 		if (value == null) {
 			value = this.form(name);
 		}
@@ -246,9 +247,9 @@ public class KidsRequest {
 	}
 
 	public List<String> mixedParams(String name) {
-		var mixed = new ArrayList<String>();
-		var params = this.params(name);
-		var forms = this.forms(name);
+		List mixed = new ArrayList<String>();
+		List<String> params = this.params(name);
+		List<String> forms = this.forms(name);
 		mixed.addAll(params);
 		mixed.addAll(forms);
 		return mixed;
@@ -257,9 +258,9 @@ public class KidsRequest {
 	public Map<String, MixedAttribute> allFiles() {
 		if (files == null) {
 			files = new HashMap<>();
-			var datas = bodyDecoder().getBodyHttpDatas();
+			List<InterfaceHttpData> datas = bodyDecoder().getBodyHttpDatas();
 			datas.forEach(data -> {
-				var attr = (MixedAttribute) data;
+				MixedAttribute attr = (MixedAttribute) data;
 				if (attr.getHttpDataType() == HttpDataType.FileUpload) {
 					files.put(attr.getName(), attr);
 				}

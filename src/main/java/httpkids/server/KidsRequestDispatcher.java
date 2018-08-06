@@ -63,7 +63,7 @@ public class KidsRequestDispatcher implements IRequestDispatcher {
 	}
 
 	public void dispatch(ChannelHandlerContext channelCtx, FullHttpRequest req) {
-		var ctx = new KidsContext(channelCtx, contextRoot, templateEngine);
+		KidsContext ctx = new KidsContext(channelCtx, contextRoot, templateEngine);
 		try {
 			this.handleImpl(ctx, new KidsRequest(req));
 		} catch (AbortException e) {
@@ -76,7 +76,7 @@ public class KidsRequestDispatcher implements IRequestDispatcher {
 	}
 
 	private void handleException(KidsContext ctx, AbortException e) {
-		var handler = this.exceptionHandlers.getOrDefault(e.getStatus().code(), defaultExceptionHandler);
+		IExceptionHandler handler = this.exceptionHandlers.getOrDefault(e.getStatus().code(), defaultExceptionHandler);
 		try {
 			handler.handle(ctx, e);
 		} catch (Exception ex) {
